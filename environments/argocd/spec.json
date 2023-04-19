@@ -1,0 +1,13 @@
+{
+  "apiVersion": "tanka.dev/v1alpha1",
+  "kind": "Environment",
+  "metadata": {
+    "name": "argocd"
+  },
+  "spec": {
+    "apiServer": "",
+    "namespace": "argocd",
+    "resourceDefaults": {},
+    "expectVersions": {}
+  }
+}
