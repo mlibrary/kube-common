@@ -80,7 +80,7 @@ local cluster = {
     apiVersion: 'argoproj.io/v1alpha1',
     kind: 'Application',
     metadata: {
-      name: 'argocd',
+      name: 'argocd-helm-chart',
     },
     spec: {
       project: 'default',
