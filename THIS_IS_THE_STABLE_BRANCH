@@ -1,6 +1,6 @@
 If you've already made your change to the `latest` branch, and you're
 about to merge them into `stable`, then you are in the right place!
 
-    git merge latest
-    git push
+    git rebase latest
+    git push -f
     git checkout latest
