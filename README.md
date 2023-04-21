@@ -33,3 +33,23 @@ spec: {
   },
 },
 ```
+
+Latest versus stable
+--------------------
+
+Changes to the `latest` branch can happen anytime, but changes to the
+`stable` branch will always happen after an interval. So if you pull
+from `latest` in a workshop cluster and `stable` in a production
+cluster, then the change will happen in the workshop before it happens
+in production.
+
+We should set up the stable branch to follow latest automatically, but
+right now, it's done manually:
+
+```sh
+git pull
+git checkout stable
+git rebase latest
+git push -f
+git checkout latest
+```
