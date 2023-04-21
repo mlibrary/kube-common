@@ -22,15 +22,6 @@ local cluster = {
     metadata: { name: 'argocd' },
   },
 
-  tmp_config: {
-    apiVersion: 'v1',
-    kind: 'ConfigMap',
-    metadata: { name: 'tmp-config' },
-    data: {
-      hello: 'yes',
-    },
-  },
-
   tanka_config: {
     apiVersion: 'v1',
     kind: 'ConfigMap',
