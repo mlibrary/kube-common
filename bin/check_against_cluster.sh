@@ -65,7 +65,7 @@ validate_environment() {
     fi
   done
 
-  if ! [ -f "~/.kube/config" ]; then
+  if ! [ -s "$HOME/.kube/config" ]; then
     errorout "expected ~/.kube/config to be a file"
   fi
 }
@@ -115,7 +115,7 @@ add_kube_config_to_cwd() {
   # there's no easy way to import ~/.kube/config directly, but it is
   # easy enough to make a local copy.
   local kubeconfigfilename=`mktemp kube_XXXXXX.yaml`
-  cp ~/.kube/config "$kubeconfigfilename"
+  cp "$HOME/.kube/config" "$kubeconfigfilename"
   echo "$kubeconfigfilename"
 }
 

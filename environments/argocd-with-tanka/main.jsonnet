@@ -49,6 +49,7 @@ local cluster = {
     kind: 'Ingress',
     metadata: {
       name: 'argocd',
+      annotations: { 'cert-manager.io/cluster-issuer': 'letsencrypt' },
     },
     spec: {
       rules: [{
@@ -66,21 +67,6 @@ local cluster = {
         hosts: [cluster.argocd_hostname],
         secretName: 'argocd-tls',
       }],
-    },
-  },
-
-  cert: {
-    apiVersion: 'cert-manager.io/v1',
-    kind: 'Certificate',
-    metadata: { name: 'argocd-tls' },
-    spec: {
-      secretName: 'argocd-tls',
-      dnsNames: [cluster.argocd_hostname],
-      usages: ['digital signature', 'key encipherment'],
-      issuerRef: {
-        kind: 'ClusterIssuer',
-        name: 'letsencrypt',
-      },
     },
   },
 
