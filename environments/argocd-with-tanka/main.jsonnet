@@ -10,8 +10,9 @@ local cluster = {
   argocd_hostname: error 'must provide "argocd_hostname" in /etc/cluster.json',
   argocd_client_secret: error 'must provide "argocd_client_secret" in /etc/cluster.json',
   cluster_name: error 'must provide "cluster_name" in /etc/cluster.json',
-  github_teams: error 'must provide "github_teams" in /etc/cluster.json',
   dex_url: error 'must provide "dex_url" in /etc/cluster.json',
+  github_teams: error 'must provide "github_teams" in /etc/cluster.json',
+  is_host_cluster: false,
 } + import '/etc/cluster.json';
 
 {
@@ -49,7 +50,11 @@ local cluster = {
     kind: 'Ingress',
     metadata: {
       name: 'argocd',
-      annotations: { 'cert-manager.io/cluster-issuer': 'letsencrypt' },
+      annotations: {
+        'cert-manager.io/cluster-issuer': 'letsencrypt',
+        [if cluster.is_host_cluster then
+          'nginx.ingress.kubernetes.io/ssl-passthrough']: 'true',
+      },
     },
     spec: {
       rules: [{
@@ -59,13 +64,13 @@ local cluster = {
           pathType: 'Prefix',
           backend: { service: {
             name: 'argocd-server',
-            port: { name: 'http' },
+            port: { name: if cluster.is_host_cluster then 'https' else 'http' },
           } },
         }] },
       }],
       tls: [{
         hosts: [cluster.argocd_hostname],
-        secretName: 'argocd-tls',
+        secretName: if cluster.is_host_cluster then 'argocd-secret' else 'argocd-tls',
       }],
     },
   },
@@ -91,7 +96,9 @@ local cluster = {
           releaseName: 'argocd',
           values: std.manifestYamlDoc({
             configs: {
-              params: { 'server.insecure': true },
+              [if ! cluster.is_host_cluster then 'params']: {
+                'server.insecure': true
+              },
               cm: {
                 'admin.enabled': false,
                 url: 'https://%s' % cluster.argocd_hostname,
