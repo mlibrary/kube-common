@@ -27,23 +27,23 @@ local cluster = {
   // under the wider umbrella of "things a cluster needs in order for it
   // to work properly." Nothing to do with argocd specifically, but this
   // is required for kubectl to work, and it has to live somewhere.
-  //role_bindings: [{
-  //  apiVersion: 'rbac.authorization.k8s.io/v1',
-  //  kind: 'ClusterRoleBinding',
-  //  metadata: {
-  //    name: 'github-%s' % std.splitLimitR(team_name, ':', 1)[1],
-  //  },
-  //  roleRef: {
-  //    name: 'cluster-admin',
-  //    kind: 'ClusterRole',
-  //    apiGroup: 'rbac.authorization.k8s.io',
-  //  },
-  //  subjects: [{
-  //    name: team_name,
-  //    kind: 'Group',
-  //    apiGroup: 'rbac.authorization.k8s.io',
-  //  }],
-  //} for team_name in cluster.github_teams],
+  role_bindings: [{
+    apiVersion: 'rbac.authorization.k8s.io/v1',
+    kind: 'ClusterRoleBinding',
+    metadata: {
+      name: 'github-%s' % std.splitLimitR(team_name, ':', 1)[1],
+    },
+    roleRef: {
+      name: 'cluster-admin',
+      kind: 'ClusterRole',
+      apiGroup: 'rbac.authorization.k8s.io',
+    },
+    subjects: [{
+      name: team_name,
+      kind: 'Group',
+      apiGroup: 'rbac.authorization.k8s.io',
+    }],
+  } for team_name in cluster.github_teams],
 
   tanka_config: {
     apiVersion: 'v1',
