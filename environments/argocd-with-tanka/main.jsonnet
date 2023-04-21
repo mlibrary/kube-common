@@ -22,6 +22,29 @@ local cluster = {
     metadata: { name: 'argocd' },
   },
 
+  // It doesn't quite fit for the clusterrolebindings to be here, but
+  // these are required for every cluster to work, and they make sense
+  // under the wider umbrella of "things a cluster needs in order for it
+  // to work properly." Nothing to do with argocd specifically, but this
+  // is required for kubectl to work, and it has to live somewhere.
+  role_bindings: [{
+    apiVersion: 'rbac.authorization.k8s.io/v1',
+    kind: 'ClusterRoleBinding',
+    metadata: {
+      name: 'github-%s' % std.splitLimitR(team_name, ':', 1)[1],
+    },
+    roleRef: {
+      name: 'cluster-admin',
+      kind: 'ClusterRole',
+      apiGroup: 'rbac.authorization.k8s.io',
+    },
+    subjects: [{
+      name: team_name,
+      kind: 'Group',
+      apiGroup: 'rbac.authorization.k8s.io',
+    }],
+  } for team_name in cluster.github_teams],
+
   tanka_config: {
     apiVersion: 'v1',
     kind: 'ConfigMap',
@@ -96,8 +119,8 @@ local cluster = {
           releaseName: 'argocd',
           values: std.manifestYamlDoc({
             configs: {
-              [if ! cluster.is_host_cluster then 'params']: {
-                'server.insecure': true
+              [if !cluster.is_host_cluster then 'params']: {
+                'server.insecure': true,
               },
               cm: {
                 'admin.enabled': false,

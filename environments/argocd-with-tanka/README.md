@@ -77,12 +77,13 @@ How to switch to common if you're currently managing your own version
 3.  Remove all `argocd.argoproj.io/instance` labels from the existing
     resources:
 
-| Namespace |  Resource   |       Name        |
-|-----------|-------------|-------------------|
-|           | namespace   | argocd            |
-| argocd    | ingress     | argocd            |
-| argocd    | configmap   | argocd-tanka-cmp  |
-| argocd    | application | argocd-helm-chart |
+| Namespace |      Resource      |       Name        |
+|-----------|--------------------|-------------------|
+|           | clusterrolebinding | github-*          |
+|           | namespace          | argocd            |
+| argocd    | ingress            | argocd            |
+| argocd    | configmap          | argocd-tanka-cmp  |
+| argocd    | application        | argocd-helm-chart |
 
 Once done, you should be able to add the argocd-with-tanka application
 to your app of apps and safely re-enable auto-syncing.
