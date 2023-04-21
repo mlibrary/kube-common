@@ -1,3 +1,11 @@
+// This selects >=5.9.0 and <5.10.0, and 5.10 is the version that breaks
+// compatibility with the 1.21 kubernetes api.
+// https://artifacthub.io/packages/helm/argo/argo-cd
+local argocd_helm_chart_version = '~5.9';
+
+// https://hub.docker.com/r/grafana/tanka/tags
+local tanka_container_image_version = '0.23.1';
+
 local cluster = {
   argocd_hostname: error 'must provide "argocd_hostname" in /etc/cluster.json',
   argocd_client_secret: error 'must provide "argocd_client_secret" in /etc/cluster.json',
@@ -91,7 +99,7 @@ local cluster = {
       },
       source: {
         repoURL: 'https://argoproj.github.io/argo-helm',
-        targetRevision: '5.9.1',
+        targetRevision: argocd_helm_chart_version,
         chart: 'argo-cd',
         helm: {
           releaseName: 'argocd',
@@ -115,7 +123,7 @@ local cluster = {
             repoServer: {
               extraContainers: [{
                 name: 'tanka-cmp',
-                image: 'grafana/tanka:0.23.1',
+                image: 'grafana/tanka:%s' % tanka_container_image_version,
                 command: ['/var/run/argocd/argocd-cmp-server'],
                 securityContext: {
                   runAsNonRoot: true,
