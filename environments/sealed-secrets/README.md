@@ -1,12 +1,12 @@
-Argocd with Tanka
-=================
+Sealed Secrets
+==============
 
 Add this to your app of apps:
 
 ```jsonnet
 apiVersion: 'argoproj.io/v1alpha1',
 kind: 'Application',
-metadata: { name: 'argocd-with-tanka' },
+metadata: { name: 'sealed-secrets-common' },
 spec: {
   project: 'default',
   destination: { server: 'https://kubernetes.default.svc' },
@@ -17,7 +17,7 @@ spec: {
     path: '.',
     plugin: { env: [{
       name: 'TANKA_PATH',
-      value: 'environments/argocd-with-tanka',
+      value: 'environments/sealed-secrets',
     }]},
   },
 },
