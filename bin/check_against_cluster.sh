@@ -23,7 +23,7 @@ worthless when operating from a workstation.
 
 This script does three things with a KUBECTL_CONTEXT and TANKA_PATH:
 
-1.  Pull TANKA_PATH/live_cluster.json from secret argocd/cluster-details,
+1.  Pull TANKA_PATH/live_cluster.json from repo-server:/etc/cluster.json,
 2.  Import ./live_cluster.json instead of /etc/cluster.json, and
 3.  Set the apiServer in spec.json based on KUBECTL_CONTEXT.
 
@@ -51,6 +51,9 @@ done
 shift $((OPTIND - 1))
 
 main() {
+  TANKA_PATH="$1"
+  KUBECTL_CONTEXT="$2"
+
   validate_environment
   validate_arguments "$@"
   set_api_server_in_spec_json
@@ -61,19 +64,12 @@ main() {
 validate_environment() {
   for i in kubectl jsonnet; do
     if ! which "$i" > /dev/null 2>&1; then
-      errorout "expected kubectl to be installed"
+      errorout "expected $i to be installed"
     fi
   done
-
-  if ! [ -s "$HOME/.kube/config" ]; then
-    errorout "expected ~/.kube/config to be a file"
-  fi
 }
 
 validate_arguments() {
-  TANKA_PATH="$1"
-  KUBECTL_CONTEXT="$2"
-
   if ! [ -d "$TANKA_PATH" ]; then
     errorout "expected TANKA_PATH to be a directory"
   fi
@@ -90,17 +86,31 @@ validate_arguments() {
     errorout "couldn't find context $KUBECTL_CONTEXT in ~/.kube/config"
   fi
 
-  if ! kubectl --context "$KUBECTL_CONTEXT" -n argocd \
-      get secret cluster-details > /dev/null; then
-    errorout "couldn't get secret argocd/cluster-details in $KUBECTL_CONTEXT"
+  KUBECTL_CLUSTER_SERVER="`get_cluster_server`"
+  if [ -z "$KUBECTL_CLUSTER_SERVER" ]; then
+    errorout "couldn't extract cluster server from context $KUBECTL_CONTEXT"
   fi
+
+  if [ -z "`get_repo_server_pod`" ]; then
+    errorout "couldn't find argocd-repo-server pod in context $KUBECTL_CONTEXT"
+  fi
+
+  if ! run_in_argocd_repo_server test -s /etc/cluster.json; then
+    errorout "couldn't access cluster.json from $repo_server in context $KUBECTL_CONTEXT"
+  fi
+}
+
+get_cluster_server() {
+  kubectl config view -o jsonpath="{.clusters[?(@.name == \"`get_cluster_name`\")].cluster.server}"
+}
+
+get_cluster_name() {
+  kubectl config view -o jsonpath="{.contexts[?(@.name == \"$KUBECTL_CONTEXT\")].context.cluster}"
 }
 
 set_api_server_in_spec_json() {
   backup_spec_json
-  local kubeconfig=`add_kube_config_to_cwd`
-  extract_api_server_from_kube_config "$kubeconfig"
-  rm "$kubeconfig"
+  inject_cluster_server_into_spec_json
 }
 
 backup_spec_json() {
@@ -109,41 +119,28 @@ backup_spec_json() {
   fi
 }
 
-add_kube_config_to_cwd() {
-  # A quirk of jsonnet is that it doesn't seem to understand `~` when
-  # importing (and of course environment variables are right out). So
-  # there's no easy way to import ~/.kube/config directly, but it is
-  # easy enough to make a local copy.
-  local kubeconfigfilename=`mktemp kube_XXXXXX.yaml`
-  cp "$HOME/.kube/config" "$kubeconfigfilename"
-  echo "$kubeconfigfilename"
-}
-
-extract_api_server_from_kube_config() {
-  # Parsing yaml with jsonnet is a bit weird, but I'm trying to operate
-  # only with tools that are likely to be installed, and tanka requires
-  # jsonnet, so I'm not going to add a dependency on jq if I can do
-  # everything I need with jsonnet.
-  #
-  # This imports both the spec.json and the ~/.kube/config in order to
-  # work out the cluster's api server url from the given context. The
-  # result is a new spec.json file set with the correct url.
+inject_cluster_server_into_spec_json() {
   cat <<EOF | jsonnet - > "$TANKA_PATH/spec.json"
-(import './$TANKA_PATH/spec.json.backup') +
-{
-  local kube_config = std.parseYaml(importstr './$1'),
-  local context = [x for x in kube_config.contexts if x.name == '$KUBECTL_CONTEXT'][0],
-  spec+: {
-    apiServer: [x for x in kube_config.clusters if x.name == context.context.cluster][0].cluster.server
-  }
+(import './$TANKA_PATH/spec.json.backup') + {
+  spec+: { apiServer: '$KUBECTL_CLUSTER_SERVER' }
 }
 EOF
 }
 
 pull_cluster_json_from_cluster() {
+  run_in_argocd_repo_server cat /etc/cluster.json \
+    > "$TANKA_PATH/live_cluster.json"
+}
+
+run_in_argocd_repo_server() {
   kubectl --context "$KUBECTL_CONTEXT" -n argocd \
-    get secret cluster-details -o jsonpath='{.data.cluster\.json}' \
-    | base64 -d > "$TANKA_PATH/live_cluster.json"
+    exec `get_repo_server_pod` -c tanka-cmp -- "$@"
+}
+
+get_repo_server_pod() {
+  kubectl --context "$KUBECTL_CONTEXT" -n argocd \
+    get pods -l app.kubernetes.io/name=argocd-repo-server -o name \
+    | head -n 1
 }
 
 use_local_cluster_json() {
