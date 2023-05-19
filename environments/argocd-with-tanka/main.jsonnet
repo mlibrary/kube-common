@@ -82,14 +82,17 @@ local cluster = {
     spec: {
       rules: [{
         host: cluster.argocd_hostname,
-        http: { paths: [{
-          path: '/',
-          pathType: 'Prefix',
-          backend: { service: {
-            name: 'argocd-server',
-            port: { name: if cluster.is_host_cluster then 'https' else 'http' },
-          } },
-        }] },
+        http: {
+          ingressClassName: 'nginx',
+          paths: [{
+            path: '/',
+            pathType: 'Prefix',
+            backend: { service: {
+              name: 'argocd-server',
+              port: { name: if cluster.is_host_cluster then 'https' else 'http' },
+            } },
+          }]
+        },
       }],
       tls: [{
         hosts: [cluster.argocd_hostname],
