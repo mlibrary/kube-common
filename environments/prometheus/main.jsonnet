@@ -119,7 +119,7 @@ local cluster = {
               configMap: { name: 'prometheus-server-app' },
             }] + if std.length(cluster.alertmanagers) > 0 then [{
               name: 'tls',
-              secret: { name: 'alertmanager-tls' },
+              secret: { secretName: 'prometheus-tls' },
             }] else [],
           },
         },
@@ -247,8 +247,8 @@ local cluster = {
               scheme: 'https',
               tls_config: {
                 ca_file: '/tls/ca.crt',
-                cert_file: '/tls/client.crt',
-                key_file: '/tls/client.key',
+                cert_file: '/tls/tls.crt',
+                key_file: '/tls/tls.key',
               },
               static_configs: [{ targets: cluster.alertmanagers }]
             }]
