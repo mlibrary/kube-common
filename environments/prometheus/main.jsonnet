@@ -208,7 +208,7 @@ local cluster = {
       },
     },
 
-    config: {
+    kube_config: {
       apiVersion: 'v1',
       kind: 'ConfigMap',
       metadata: {
@@ -546,7 +546,7 @@ local cluster = {
       },
     },
 
-    config: {
+    app_config: {
       apiVersion: 'v1',
       kind: 'ConfigMap',
       metadata: {
