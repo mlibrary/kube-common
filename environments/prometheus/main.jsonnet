@@ -63,8 +63,12 @@ local cluster = {
                 '--webhook-url=http://127.0.0.1:9090/-/reload',
               ],
               volumeMounts: [{
-                name: 'config',
+                name: 'config-kube',
                 mountPath: '/etc/config',
+                readOnly: true,
+              }, {
+                name: 'config-app',
+                mountPath: '/etc/config/app',
                 readOnly: true,
               }],
             }, {
@@ -96,7 +100,7 @@ local cluster = {
                 readOnly: true,
               }, {
                 name: 'config-app',
-                mountPath: '/etc/config/ap',
+                mountPath: '/etc/config/app',
                 readOnly: true,
               }] + if std.length(cluster.alertmanagers) > 0 then [{
                 name: 'tls',
