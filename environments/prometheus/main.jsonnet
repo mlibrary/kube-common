@@ -549,18 +549,6 @@ local cluster = {
         }),
       },
     },
-
-    app_config: {
-      apiVersion: 'v1',
-      kind: 'ConfigMap',
-      metadata: {
-        name: 'prometheus-server-app',
-        namespace: 'prometheus',
-      },
-      data: {
-        'alerts.yml': std.manifestYamlDoc({}),
-      },
-    },
   },
 
   blackbox: {
