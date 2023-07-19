@@ -116,7 +116,7 @@ local cluster = {
               configMap: { name: 'prometheus-server-kube' },
             }, {
               name: 'config-app',
-              configMap: { name: 'prometheus-server-app' },
+              configMap: { name: 'monitoring-rules' },
             }] + if std.length(cluster.alertmanagers) > 0 then [{
               name: 'tls',
               secret: { secretName: 'prometheus-tls' },

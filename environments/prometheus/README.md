@@ -29,7 +29,7 @@ Add this to your app of apps:
     apiVersion: 'v1',
     kind: 'ConfigMap',
     metadata: {
-      name: 'prometheus-server-app',
+      name: 'monitoring-rules',
       namespace: 'prometheus',
     },
     data: {
