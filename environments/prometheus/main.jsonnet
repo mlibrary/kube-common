@@ -60,6 +60,7 @@ local cluster = {
               image: 'jimmidyson/configmap-reload:%s' % configmap_reload_version,
               args: [
                 '--volume-dir=/etc/config',
+                '--volume-dir=/etc/config/app',
                 '--webhook-url=http://127.0.0.1:9090/-/reload',
               ],
               volumeMounts: [{
