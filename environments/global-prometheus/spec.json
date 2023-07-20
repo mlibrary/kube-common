@@ -1,0 +1,13 @@
+{
+  "apiVersion": "tanka.dev/v1alpha1",
+  "kind": "Environment",
+  "metadata": {
+    "name": "global-prometheus"
+  },
+  "spec": {
+    "apiServer": "",
+    "namespace": "global-prometheus",
+    "resourceDefaults": {},
+    "expectVersions": {}
+  }
+}
