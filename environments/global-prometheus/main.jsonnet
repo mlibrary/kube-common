@@ -1,5 +1,7 @@
-local prometheus_server_version = 'v2.19.0';
-local configmap_reload_version = 'v0.3.0';
+// https://hub.docker.com/r/prom/prometheus/tags
+local prometheus_server_version = 'v2.45.0';
+// https://hub.docker.com/r/jimmidyson/configmap-reload/tags
+local configmap_reload_version = 'v0.9.0';
 
 local cluster = {
   argocd_hostname: error 'must provide "argocd_hostname" in /etc/cluster.json',
@@ -54,15 +56,29 @@ local cluster = {
             containers: [{
               name: 'configmap-reload',
               image: 'jimmidyson/configmap-reload:%s' % configmap_reload_version,
-              args: [
-                '--volume-dir=/etc/config',
+              args: if std.length(cluster.alertmanagers) > 0 then [
+                '--volume-dir=/monitoring-rules',
+                '--volume-dir=/prometheus-server',
+                '--volume-dir=/prometheus-tls',
+                '--webhook-url=http://127.0.0.1:9090/-/reload',
+              ] else [
+                '--volume-dir=/monitoring-rules',
+                '--volume-dir=/prometheus-server',
                 '--webhook-url=http://127.0.0.1:9090/-/reload',
               ],
               volumeMounts: [{
                 name: 'rules',
-                mountPath: '/etc/config',
+                mountPath: '/monitoring-rules',
                 readOnly: true,
-              }],
+              }, {
+                name: 'config',
+                mountPath: '/prometheus-server',
+                readOnly: true,
+              }] + if std.length(cluster.alertmanagers) > 0 then [{
+                name: 'tls',
+                mountPath: '/prometheus-tls',
+                readOnly: true,
+              }] else [],
             }, {
               name: 'prometheus-server',
               image: 'prom/prometheus:%s' % prometheus_server_version,
