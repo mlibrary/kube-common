@@ -6,7 +6,7 @@
   },
   "spec": {
     "apiServer": "",
-    "namespace": "argocd",
+    "namespace": "prometheus",
     "resourceDefaults": {},
     "expectVersions": {}
   }

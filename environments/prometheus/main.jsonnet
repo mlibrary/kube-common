@@ -32,7 +32,6 @@ local cluster = {
       kind: 'Deployment',
       metadata: {
         name: 'prometheus-server',
-        namespace: 'prometheus',
       },
       spec: {
         replicas: 1,
@@ -127,7 +126,6 @@ local cluster = {
       kind: 'Service',
       metadata: {
         name: 'prometheus-server',
-        namespace: 'prometheus',
       },
       spec: {
         type: 'ClusterIP',
@@ -144,7 +142,6 @@ local cluster = {
       kind: 'ServiceAccount',
       metadata: {
         name: 'prometheus-server',
-        namespace: 'prometheus',
       },
     },
 
@@ -200,7 +197,6 @@ local cluster = {
       kind: 'PersistentVolumeClaim',
       metadata: {
         name: 'prometheus-server',
-        namespace: 'prometheus',
       },
       spec: {
         accessModes: ['ReadWriteOnce'],
@@ -213,7 +209,6 @@ local cluster = {
       kind: 'ConfigMap',
       metadata: {
         name: 'prometheus-server',
-        namespace: 'prometheus',
       },
       data: {
         'recording_rules.yml': std.manifestYamlDoc({
@@ -553,7 +548,6 @@ local cluster = {
       kind: 'Deployment',
       metadata: {
         name: 'blackbox',
-        namespace: 'prometheus',
       },
       spec: {
         replicas: 1,
@@ -583,7 +577,6 @@ local cluster = {
       kind: 'Service',
       metadata: {
         name: 'blackbox',
-        namespace: 'prometheus',
       },
       spec: {
         type: 'ClusterIP',
@@ -602,7 +595,6 @@ local cluster = {
       kind: 'Deployment',
       metadata: {
         name: 'pushgateway',
-        namespace: 'prometheus',
       },
       spec: {
         replicas: 1,
@@ -642,7 +634,6 @@ local cluster = {
       kind: 'Service',
       metadata: {
         name: 'pushgateway',
-        namespace: 'prometheus',
         annotations: { 'prometheus.io/probe': 'pushgateway' },
       },
       spec: {
@@ -660,7 +651,6 @@ local cluster = {
       kind: 'PersistentVolumeClaim',
       metadata: {
         name: 'pushgateway',
-        namespace: 'prometheus',
       },
       spec: {
         accessModes: ['ReadWriteOnce'],
@@ -675,7 +665,6 @@ local cluster = {
       kind: 'Deployment',
       metadata: {
         name: 'kube-state-metrics',
-        namespace: 'prometheus',
       },
       spec: {
         replicas: 1,
@@ -748,7 +737,6 @@ local cluster = {
       kind: 'Service',
       metadata: {
         name: 'kube-state-metrics',
-        namespace: 'prometheus',
         annotations: { 'prometheus.io/scrape': 'true' },
       },
       spec: {
@@ -766,7 +754,6 @@ local cluster = {
       kind: 'ServiceAccount',
       metadata: {
         name: 'kube-state-metrics',
-        namespace: 'prometheus',
       },
     },
 
