@@ -5,7 +5,7 @@ Add this to your app of apps (probably in the workshop cluster only):
 
 ```jsonnet
 {
-  prometheus_application: {
+  global_prometheus_application: {
     apiVersion: 'argoproj.io/v1alpha1',
     kind: 'Application',
     metadata: { name: 'global-prometheus' },
@@ -25,7 +25,7 @@ Add this to your app of apps (probably in the workshop cluster only):
     },
   },
 
-  prometheus_config: {
+  global_prometheus_config: {
     apiVersion: 'v1',
     kind: 'ConfigMap',
     metadata: {
