@@ -60,16 +60,11 @@ local cluster = {
               image: 'jimmidyson/configmap-reload:%s' % configmap_reload_version,
               args: [
                 '--volume-dir=/etc/config',
-                '--volume-dir=/etc/config/app',
                 '--webhook-url=http://127.0.0.1:9090/-/reload',
               ],
               volumeMounts: [{
-                name: 'config-kube',
+                name: 'rules',
                 mountPath: '/etc/config',
-                readOnly: true,
-              }, {
-                name: 'config-app',
-                mountPath: '/etc/config/app',
                 readOnly: true,
               }],
             }, {
@@ -96,11 +91,11 @@ local cluster = {
                 name: 'storage',
                 mountPath: '/data',
               }, {
-                name: 'config-kube',
+                name: 'config',
                 mountPath: '/etc/config',
                 readOnly: true,
               }, {
-                name: 'config-app',
+                name: 'rules',
                 mountPath: '/etc/config/app',
                 readOnly: true,
               }] + if std.length(cluster.alertmanagers) > 0 then [{
@@ -113,10 +108,10 @@ local cluster = {
               name: 'storage',
               persistentVolumeClaim: { claimName: 'prometheus-server' },
             }, {
-              name: 'config-kube',
-              configMap: { name: 'prometheus-server-kube' },
+              name: 'config',
+              configMap: { name: 'prometheus-server' },
             }, {
-              name: 'config-app',
+              name: 'rules',
               configMap: { name: 'monitoring-rules' },
             }] + if std.length(cluster.alertmanagers) > 0 then [{
               name: 'tls',
@@ -213,11 +208,11 @@ local cluster = {
       },
     },
 
-    kube_config: {
+    config: {
       apiVersion: 'v1',
       kind: 'ConfigMap',
       metadata: {
-        name: 'prometheus-server-kube',
+        name: 'prometheus-server',
         namespace: 'prometheus',
       },
       data: {
