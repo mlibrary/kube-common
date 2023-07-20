@@ -245,6 +245,7 @@ local cluster = {
             ],
             params: { 'match[]': [
               '{__name__=~".+:kube_pod_.+_resource_.+:sum"}',
+              '{__name__=~".+:kube_resourcequota:vcluster_sum"}',
             ] },
           }, {
             job_name: 'federate-vclusters',
