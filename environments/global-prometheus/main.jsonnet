@@ -278,7 +278,7 @@ local cluster = {
             ],
 
             params: { 'match[]': [
-              '{__name__="namespace:kubelet_volume_stats_capacity:sum"}',
+              '{__name__=~".*:.*:.*"}',
             ] },
           }],
         }),
