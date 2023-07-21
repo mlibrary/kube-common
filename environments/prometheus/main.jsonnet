@@ -237,6 +237,9 @@ local cluster = {
               record: 'namespace:kubelet_volume_stats_capacity:sum',
               expr: 'sum by(namespace)(kubelet_volume_stats_capacity_bytes)',
             }, {
+              record: 'namespace:kubelet_volume_stats_used:sum',
+              expr: 'sum by(namespace)(kubelet_volume_stats_used_bytes)',
+            }, {
               record: 'namespace:container_cpu_usage_seconds_total:sum_rate_5m',
               expr: 'sum by(namespace)(rate(container_cpu_usage_seconds_total{namespace!="", pod!=""}[5m]))',
             }, {
