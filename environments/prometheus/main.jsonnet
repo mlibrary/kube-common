@@ -89,6 +89,10 @@ local cluster = {
               name: 'prometheus-server',
               image: 'prom/prometheus:%s' % prometheus_server_version,
               ports: [{ containerPort: 9090 }],
+              resources: {
+                requests: { cpu: "400m", memory: "2Gi" },
+                limits: { cpu: "800m", memory: "4Gi" },
+              },
               livenessProbe: {
                 initialDelaySeconds: 30,
                 timeoutSeconds: 30,
