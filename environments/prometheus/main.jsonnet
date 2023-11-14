@@ -7,7 +7,7 @@ local blackbox_version = 'v0.24.0';
 // https://hub.docker.com/r/prom/pushgateway/tags
 local pushgateway_version = 'v1.6.0';
 // https://quay.io/repository/coreos/kube-state-metrics?tab=tags&tag=latest
-local kube_state_metrics_version = 'v1.9.7';
+local kube_state_metrics_version = 'v2.8.2';
 
 local cluster = {
   argocd_hostname: error 'must provide "argocd_hostname" in /etc/cluster.json',
@@ -719,7 +719,7 @@ local cluster = {
             },
             containers: [{
               name: 'kube-state-metrics',
-              image: 'quay.io/coreos/kube-state-metrics:%s' % kube_state_metrics_version,
+              image: 'registry.k8s.io/kube-state-metrics/kube-state-metrics:%s' % kube_state_metrics_version,
               ports: [{ containerPort: 8080 }],
               livenessProbe: {
                 initialDelaySeconds: 5,
