@@ -642,6 +642,15 @@ local cluster = {
             'app.kubernetes.io/part-of': 'prometheus',
           } },
           spec: {
+            initContainers: [{
+              name: 'chmod-for-pushgateway',
+              image: 'busybox',
+              command: ['sh', '-c', 'chmod 777 /pvc'],
+              volumeMounts: [{
+                name: 'storage',
+                mountPath: '/pvc',
+              }],
+            }],
             containers: [{
               name: 'pushgateway',
               image: 'prom/pushgateway:%s' % pushgateway_version,
