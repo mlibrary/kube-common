@@ -36,6 +36,11 @@ Add this to your app of apps (probably in the workshop cluster only):
       'alerts.yml': std.manifestYamlDoc({
         // Your alerts go here
       }),
+      'scrape-configs.yml': std.manifestYamlDoc({
+        scrape_configs: [
+          // Your additional scrape target configs go here
+        ]
+      }),
     },
   },
 }
