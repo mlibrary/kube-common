@@ -218,6 +218,9 @@ local cluster = {
               static_configs: [{ targets: cluster.alertmanagers }]
             }]
           },
+          scrape_config_files: [
+            '/etc/config/app/scrape-configs.yml',
+          ],
           scrape_configs: [{
             job_name: 'prometheus',
             static_configs: [{ targets: ['localhost:9090'] }],
