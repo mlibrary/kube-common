@@ -1,6 +1,8 @@
 Common config repo
 ==================
 
+<!-- meaningless comment for forced update -->
+
 Our intention is to keep the `latest` and `stable` branches mostly in
 sync, but we'll always change `latest` before doing anything with
 `stable`.
