@@ -41,4 +41,4 @@ Add this to your app of apps:
 }
 ```
 
-Junk commits: `|||`
+Junk commits: `||||`
