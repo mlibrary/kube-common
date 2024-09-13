@@ -136,7 +136,7 @@ local cluster = {
             },
             repoServer: {
               existingVolumes: {
-                ramdisk(capacity): { emptyDir: { medium: 'Memory', sizeLimit: capacity } },
+                ramdisk(capacity):: { emptyDir: { medium: 'Memory', sizeLimit: capacity } },
 
                 // var-files should possibly be a PVC or an ephemeral volume provisioned by Rook
                 varFiles: self.ramdisk('1Gi'),
