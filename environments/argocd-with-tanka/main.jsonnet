@@ -135,6 +135,26 @@ local cluster = {
               },
             },
             repoServer: {
+              existingVolumes: {
+                ramdisk(capacity): { emptyDir: { medium: 'Memory', sizeLimit: capacity } },
+
+                // var-files should possibly be a PVC or an ephemeral volume provisioned by Rook
+                varFiles: self.ramdisk('1Gi'),
+                helmWorkingDir: self.ramdisk('100Mi'),
+                tmp: self.ramdisk('100Mi'),
+                plugins: self.ramdisk('100Mi'),
+              },
+              // The memory limit is high for now to account for all of the ramdisk
+              resources: {
+                requests: {
+                  cpu: '50m',
+                  memory: '256Mi',
+                },
+                limits: {
+                  cpu: '1',
+                  memory: '2Gi',
+                },
+              },
               extraContainers: [{
                 name: 'tanka-cmp',
                 image: 'grafana/tanka:%s' % tanka_container_image_version,
@@ -158,7 +178,7 @@ local cluster = {
                   mountPath: '/etc/cluster.json',
                   subPath: 'cluster.json',
                 }, {
-                  name: 'tmp',
+                  name: 'cmp-tmp',
                   mountPath: '/tmp',
                 }],
               }],
@@ -168,6 +188,12 @@ local cluster = {
               }, {
                 name: 'cluster-details',
                 secret: { secretName: 'cluster-details' },
+              }, {
+                name: 'cmp-tmp',
+                emptyDir: {
+                  medium: 'Memory',
+                  sizeLimit: '100Mi',
+                }
               }],
             },
           }),
