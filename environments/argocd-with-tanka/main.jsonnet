@@ -1,10 +1,7 @@
-// This selects >=5.9.0 and <5.10.0, and 5.10 is the version that breaks
-// compatibility with the 1.21 kubernetes api.
-// https://artifacthub.io/packages/helm/argo/argo-cd
-local argocd_helm_chart_version = '~5.9';
+local argocd_helm_chart_version = '~7.5';
 
 // https://hub.docker.com/r/grafana/tanka/tags
-local tanka_container_image_version = '0.24.0';
+local tanka_container_image_version = '0.28.2';
 
 local cluster = {
   argocd_hostname: error 'must provide "argocd_hostname" in /etc/cluster.json',
