@@ -31,6 +31,27 @@ local cluster = {
     },
   },
 
+  default_resources: {
+    apiVersion: 'v1',
+    kind: 'LimitRange',
+    metadata: { name: 'default-container-resources' },
+    spec: {
+      limits: [{
+        type: 'Container',
+        defaultRequest: {
+          cpu: '100m',
+          memory: '128Mi',
+          'ephemeral-storage': '128Mi',
+        },
+        default: {
+          cpu: '250m',
+          memory: '512Mi',
+          'ephemeral-storage': '512Mi',
+        },
+      }],
+    },
+  },
+
   server: {
     deployment: {
       apiVersion: 'apps/v1',

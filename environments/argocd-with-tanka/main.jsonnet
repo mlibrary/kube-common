@@ -19,6 +19,27 @@ local cluster = {
     metadata: { name: 'argocd' },
   },
 
+  default_resources: {
+    apiVersion: 'v1',
+    kind: 'LimitRange',
+    metadata: { name: 'default-container-resources' },
+    spec: {
+      limits: [{
+        type: 'Container',
+        defaultRequest: {
+          cpu: '100m',
+          memory: '128Mi',
+          'ephemeral-storage': '128Mi',
+        },
+        default: {
+          cpu: '250m',
+          memory: '512Mi',
+          'ephemeral-storage': '512Mi',
+        },
+      }],
+    },
+  },
+
   // It doesn't quite fit for the clusterrolebindings to be here, but
   // these are required for every cluster to work, and they make sense
   // under the wider umbrella of "things a cluster needs in order for it

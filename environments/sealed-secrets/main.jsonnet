@@ -24,4 +24,28 @@ local sealed_secrets_heml_chart_version = '^2.7.0';
       },
     },
   },
+
+  default_resources: {
+    apiVersion: 'v1',
+    kind: 'LimitRange',
+    metadata: {
+      name: 'default-container-resources',
+      namespace: 'kube-system',
+    },
+    spec: {
+      limits: [{
+        type: 'Container',
+        defaultRequest: {
+          cpu: '100m',
+          memory: '128Mi',
+          'ephemeral-storage': '128Mi',
+        },
+        default: {
+          cpu: '250m',
+          memory: '512Mi',
+          'ephemeral-storage': '512Mi',
+        },
+      }],
+    },
+  },
 }
