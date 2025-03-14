@@ -1,11 +1,11 @@
 // https://hub.docker.com/r/prom/prometheus/tags
-local prometheus_server_version = 'v2.45.0';
+local prometheus_server_version = 'v3.2.1';
 // https://hub.docker.com/r/jimmidyson/configmap-reload/tags
 local configmap_reload_version = 'v0.9.0';
 // https://hub.docker.com/r/prom/blackbox-exporter/tags
 local blackbox_version = 'v0.24.0';
 // https://hub.docker.com/r/prom/pushgateway/tags
-local pushgateway_version = 'v1.6.0';
+local pushgateway_version = 'v1.11.0';
 // https://quay.io/repository/coreos/kube-state-metrics?tab=tags&tag=latest
 local kube_state_metrics_version = 'v2.8.2';
 
@@ -19,6 +19,7 @@ local cluster = {
   prometheus_retention: '15d',
   prometheus_storage: '32Gi',
   alertmanagers: [],
+  remote_metrics: [],
   team_name: error 'must provide "team_name" in /etc/cluster.json',
 } + import '/etc/cluster.json';
 
@@ -83,7 +84,7 @@ local cluster = {
             containers: [{
               name: 'configmap-reload',
               image: 'jimmidyson/configmap-reload:%s' % configmap_reload_version,
-              args: if std.length(cluster.alertmanagers) > 0 then [
+              args: if std.length(cluster.alertmanagers) > 0 || std.length(cluster.remote_metrics) > 0 then [
                 '--volume-dir=/monitoring-rules',
                 '--volume-dir=/prometheus-server',
                 '--volume-dir=/prometheus-tls',
@@ -101,7 +102,7 @@ local cluster = {
                 name: 'config',
                 mountPath: '/prometheus-server',
                 readOnly: true,
-              }] + if std.length(cluster.alertmanagers) > 0 then [{
+              }] + if std.length(cluster.alertmanagers) > 0 || std.length(cluster.remote_metrics) > 0 then [{
                 name: 'tls',
                 mountPath: '/prometheus-tls',
                 readOnly: true,
@@ -141,7 +142,7 @@ local cluster = {
                 name: 'rules',
                 mountPath: '/etc/config/app',
                 readOnly: true,
-              }] + if std.length(cluster.alertmanagers) > 0 then [{
+              }] + if std.length(cluster.alertmanagers) > 0 || std.length(cluster.remote_metrics) > 0 then [{
                 name: 'tls',
                 mountPath: '/tls',
                 readOnly: true,
@@ -156,7 +157,7 @@ local cluster = {
             }, {
               name: 'rules',
               configMap: { name: 'monitoring-rules' },
-            }] + if std.length(cluster.alertmanagers) > 0 then [{
+            }] + if std.length(cluster.alertmanagers) > 0 || std.length(cluster.remote_metrics) > 0 then [{
               name: 'tls',
               secret: { secretName: 'prometheus-tls' },
             }] else [],
@@ -285,6 +286,21 @@ local cluster = {
           rule_files: [
             '/etc/config/app/alerts.yml',
             '/etc/config/recording_rules.yml',
+          ],
+          [if std.length(cluster.remote_metrics) > 0 then 'remote_write']: [
+            {
+              url: write_target,
+              tls_config: {
+                ca_file: '/tls/ca.crt',
+                cert_file: '/tls/tls.crt',
+                key_file: '/tls/tls.key',
+              },
+              queue_config: {
+                // Temporary, arbitrarily short look-back period while stabilizing and tuning
+                sample_age_limit: '300s',
+              }
+            }
+            for write_target in cluster.remote_metrics
           ],
           [if std.length(cluster.alertmanagers) > 0 then 'alerting']: {
             alertmanagers: [{
