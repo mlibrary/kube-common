@@ -291,7 +291,8 @@ local cluster = {
             {
               url: write_target,
               tls_config: {
-                ca_file: '/tls/ca.crt',
+                // We do not use the ca_file because the Mimir ingress is signed by
+                // Let's Encrypt, whereas the Alertmanager uses the Prometheus CA.
                 cert_file: '/tls/tls.crt',
                 key_file: '/tls/tls.key',
               },
