@@ -155,6 +155,18 @@ local cluster = {
                 'policy.csv': std.join('', ['g, %s, role:admin\n' % x for x in cluster.github_teams]),
               },
             },
+            controller: {
+              resources: {
+                requests: {
+                  cpu: '250m',
+                  memory: '256Mi',
+                },
+                limits: {
+                  cpu: '1',
+                  memory: '1Gi',
+                },
+              },
+            },
             repoServer: {
               existingVolumes: {
                 ramdisk(capacity):: { emptyDir: { medium: 'Memory', sizeLimit: capacity } },
