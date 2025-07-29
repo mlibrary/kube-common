@@ -1,5 +1,5 @@
 // https://hub.docker.com/r/prom/prometheus/tags
-local prometheus_server_version = 'v2.45.0';
+local prometheus_server_version = 'v3.2.1';
 // https://hub.docker.com/r/jimmidyson/configmap-reload/tags
 local configmap_reload_version = 'v0.9.0';
 
