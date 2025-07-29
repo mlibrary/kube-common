@@ -13,6 +13,7 @@ local cluster = {
   prometheus_retention: '15d',
   global_prometheus_storage: '2Gi',
   alertmanagers: [],
+  remote_metrics: [],
   team_name: error 'must provide "team_name" in /etc/cluster.json',
 } + import '/etc/cluster.json';
 
@@ -77,7 +78,7 @@ local cluster = {
             containers: [{
               name: 'configmap-reload',
               image: 'jimmidyson/configmap-reload:%s' % configmap_reload_version,
-              args: if std.length(cluster.alertmanagers) > 0 then [
+              args: if std.length(cluster.alertmanagers) > 0 || std.length(cluster.remote_metrics) > 0 then [
                 '--volume-dir=/monitoring-rules',
                 '--volume-dir=/prometheus-server',
                 '--volume-dir=/prometheus-tls',
@@ -95,7 +96,7 @@ local cluster = {
                 name: 'config',
                 mountPath: '/prometheus-server',
                 readOnly: true,
-              }] + if std.length(cluster.alertmanagers) > 0 then [{
+              }] + if std.length(cluster.alertmanagers) > 0 || std.length(cluster.remote_metrics) > 0 then [{
                 name: 'tls',
                 mountPath: '/prometheus-tls',
                 readOnly: true,
@@ -131,7 +132,7 @@ local cluster = {
                 name: 'rules',
                 mountPath: '/etc/config/app',
                 readOnly: true,
-              }] + if std.length(cluster.alertmanagers) > 0 then [{
+              }] + if std.length(cluster.alertmanagers) > 0 || std.length(cluster.remote_metrics) > 0 then [{
                 name: 'tls',
                 mountPath: '/tls',
                 readOnly: true,
@@ -146,7 +147,7 @@ local cluster = {
             }, {
               name: 'rules',
               configMap: { name: 'monitoring-rules' },
-            }] + if std.length(cluster.alertmanagers) > 0 then [{
+            }] + if std.length(cluster.alertmanagers) > 0 || std.length(cluster.remote_metrics) > 0 then [{
               name: 'tls',
               secret: { secretName: 'prometheus-tls' },
             }] else [],
@@ -227,6 +228,22 @@ local cluster = {
           },
           rule_files: [
             '/etc/config/app/alerts.yml',
+          ],
+          [if std.length(cluster.remote_metrics) > 0 then 'remote_write']: [
+            {
+              url: write_target,
+              tls_config: {
+                // We do not use the ca_file because the Mimir ingress is signed by
+                // Let's Encrypt, whereas the Alertmanager uses the Prometheus CA.
+                cert_file: '/tls/tls.crt',
+                key_file: '/tls/tls.key',
+              },
+              queue_config: {
+                // Temporary, arbitrarily short look-back period while stabilizing and tuning
+                sample_age_limit: '300s',
+              }
+            }
+            for write_target in cluster.remote_metrics
           ],
           [if std.length(cluster.alertmanagers) > 0 then 'alerting']: {
             alertmanagers: [{
