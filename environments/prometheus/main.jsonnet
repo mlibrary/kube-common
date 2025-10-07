@@ -281,6 +281,7 @@ local cluster = {
             scrape_timeout: '10s',
             external_labels: {
               team: cluster.team_name,
+              cluster: cluster.cluster_name,
             },
           },
           rule_files: [
