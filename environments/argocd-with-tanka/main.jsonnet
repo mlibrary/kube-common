@@ -150,9 +150,8 @@ local cluster = {
                   clientID: '%s-argocd' % cluster.cluster_name,
                   clientSecret: cluster.argocd_client_secret,
                 }),
-                'resource.customizations.ignoreResourceUpdates.discovery.k8s.io_EndpointSlice': std.manifestYamlDoc({
-                  jsonPointers: [],
-                }),
+                'resource.customizations.ignoreResourceUpdates.Endpoints': '',
+                'resource.customizations.ignoreResourceUpdates.discovery.k8s.io_EndpointSlice': '',
                 'resource.exclusions': std.manifestYamlDoc([
                   {
                     apiGroups: [
