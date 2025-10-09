@@ -150,14 +150,6 @@ local cluster = {
                   clientID: '%s-argocd' % cluster.cluster_name,
                   clientSecret: cluster.argocd_client_secret,
                 }),
-                'resource.customizations.ignoreResourceUpdates': std.manifestYamlDoc({
-                  ConfigMap: "jqPathExpressions:\n  # Ignore the cluster-autoscaler status\n  - '.metadata.annotations.\"cluster-autoscaler.kubernetes.io/last-updated\"'\n  # Ignore the annotation of the legacy Leases election\n  - '.metadata.annotations.\"control-plane.alpha.kubernetes.io/leader\"'\n",
-                  all: 'jsonPointers:\n  - /status\n',
-                  apps_ReplicaSet: "jqPathExpressions:\n  - '.metadata.annotations.\"deployment.kubernetes.io/desired-replicas\"'\n  - '.metadata.annotations.\"deployment.kubernetes.io/max-replicas\"'\n  - '.metadata.annotations.\"rollout.argoproj.io/desired-replicas\"'\n",
-                  'argoproj.io_Application': "jqPathExpressions:\n  - '.metadata.annotations.\"notified.notifications.argoproj.io\"'\n  - '.metadata.annotations.\"argocd.argoproj.io/refresh\"'\n  - '.metadata.annotations.\"argocd.argoproj.io/hydrate\"'\n  - '.operation'\n",
-                  'argoproj.io_Rollout': "jqPathExpressions:\n  - '.metadata.annotations.\"notified.notifications.argoproj.io\"'\n",
-                  autoscaling_HorizontalPodAutoscaler: "jqPathExpressions:\n  - '.metadata.annotations.\"autoscaling.alpha.kubernetes.io/behavior\"'\n  - '.metadata.annotations.\"autoscaling.alpha.kubernetes.io/conditions\"'\n  - '.metadata.annotations.\"autoscaling.alpha.kubernetes.io/metrics\"'\n  - '.metadata.annotations.\"autoscaling.alpha.kubernetes.io/current-metrics\"'\n",
-                }),
                 'resource.exclusions': std.manifestYamlDoc([
                   {
                     apiGroups: [
