@@ -150,46 +150,6 @@ local cluster = {
                   clientID: '%s-argocd' % cluster.cluster_name,
                   clientSecret: cluster.argocd_client_secret,
                 }),
-                'resource.exclusions': std.manifestYamlDoc([
-                  {
-                    apiGroups: [
-                      'coordination.k8s.io',
-                    ],
-                    kinds: [
-                      'Lease',
-                    ],
-                  },
-                  {
-                    apiGroups: [
-                      'authentication.k8s.io',
-                      'authorization.k8s.io',
-                    ],
-                    kinds: [
-                      'SelfSubjectReview',
-                      'TokenReview',
-                      'LocalSubjectAccessReview',
-                      'SelfSubjectAccessReview',
-                      'SelfSubjectRulesReview',
-                      'SubjectAccessReview',
-                    ],
-                  },
-                  {
-                    apiGroups: [
-                      'certificates.k8s.io',
-                    ],
-                    kinds: [
-                      'CertificateSigningRequest',
-                    ],
-                  },
-                  {
-                    apiGroups: [
-                      'cert-manager.io',
-                    ],
-                    kinds: [
-                      'CertificateRequest',
-                    ],
-                  },
-                ]),
               },
               rbac: {
                 'policy.csv': std.join('', ['g, %s, role:admin\n' % x for x in cluster.github_teams]),
