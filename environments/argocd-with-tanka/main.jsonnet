@@ -162,7 +162,7 @@ local cluster = {
                   memory: '256Mi',
                 },
                 limits: {
-                  cpu: '1',
+                  cpu: '1500m',
                   memory: '2Gi',
                 },
               },
