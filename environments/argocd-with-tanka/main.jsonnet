@@ -1,4 +1,4 @@
-local argocd_helm_chart_version = '7.7.3';
+local argocd_helm_chart_version = '7.9.1';
 
 // https://hub.docker.com/r/grafana/tanka/tags
 local tanka_container_image_version = '0.28.2';
