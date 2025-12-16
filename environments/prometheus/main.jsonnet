@@ -283,6 +283,7 @@ local cluster = {
               team: cluster.team_name,
               cluster: cluster.cluster_name,
             },
+            metric_name_validation_scheme: 'legacy',
           },
           rule_files: [
             '/etc/config/app/alerts.yml',
