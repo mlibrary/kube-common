@@ -1,7 +1,7 @@
-local argocd_helm_chart_version = '~7.6';
+local argocd_helm_chart_version = '~10.0';
 
 // https://hub.docker.com/r/grafana/tanka/tags
-local tanka_container_image_version = '0.28.2';
+local tanka_container_image_version = '0.37.4';
 
 local cluster = {
   argocd_hostname: error 'must provide "argocd_hostname" in /etc/cluster.json',
