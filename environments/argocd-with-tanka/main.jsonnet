@@ -1,4 +1,5 @@
-local argocd_helm_chart_version = '~10.0';
+// Using the exact version managed by vcluster init manifest for now
+local argocd_helm_chart_version = '10.0.1';
 
 // https://hub.docker.com/r/grafana/tanka/tags
 local tanka_container_image_version = '0.37.4';
