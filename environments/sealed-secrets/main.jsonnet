@@ -1,5 +1,5 @@
-// https://artifacthub.io/packages/helm/bitnami-labs/sealed-secrets
-local sealed_secrets_heml_chart_version = '^2.7.0';
+// https://artifacthub.io/packages/helm/sealed-secrets/sealed-secrets
+local sealed_secrets_heml_chart_version = '^2.20.0';
 
 {
   sealed_secrets: {
@@ -17,7 +17,7 @@ local sealed_secrets_heml_chart_version = '^2.7.0';
         namespace: 'kube-system',
       },
       source: {
-        repoURL: 'https://bitnami-labs.github.io/sealed-secrets',
+        repoURL: 'https://bitnami.github.io/sealed-secrets',
         targetRevision: sealed_secrets_heml_chart_version,
         chart: 'sealed-secrets',
         helm: { releaseName: 'sealed-secrets-controller' },
