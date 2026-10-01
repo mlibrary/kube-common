@@ -1,8 +1,8 @@
 // Using the exact version managed by vcluster init manifest for now
-local argocd_helm_chart_version = '10.1.2';
+local argocd_helm_chart_version = '10.8.4';
 
 // https://hub.docker.com/r/grafana/tanka/tags
-local tanka_container_image_version = '0.37.4';
+local tanka_container_image_version = '0.39.0';
 
 local cluster = {
   argocd_hostname: error 'must provide "argocd_hostname" in /etc/cluster.json',
